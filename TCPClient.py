@@ -93,11 +93,32 @@ online_clients_listbox = tk.Listbox(online_clients_frame, height=20, width=20)
 online_clients_listbox.pack(side=tk.BOTTOM, padx=10, pady=10)
 
 
-def update_clients_list(clients):
-    # Clear the existing list of clients
-    clients_listbox.delete(0, tk.END)
-    for client in clients:
-        clients_listbox.insert(tk.END, client)
+# Function to update the list of online clients
+def update_online_clients(online_clients):
+    # Clear the current list of online clients
+    online_clients_listbox.delete(0, tk.END)
+
+    # Add each online client to the listbox
+    for client in online_clients:
+        online_clients_listbox.insert(tk.END, client)
+
+
+# update_online_clients(['ahmad', 'mohammad'])
+
+
+def on_listbox_double_click(event):
+    # Get the selected item from the listbox
+    selection = online_clients_listbox.get(
+        online_clients_listbox.curselection())
+
+    # Perform the desired action, e.g. print the selected item
+    input_field.delete(0, tk.END)
+    input_field.insert(tk.END, f"@{selection} ")
+    input_field.focus_set()
+    # print(selection)
+
+
+online_clients_listbox.bind("<Double-Button-1>", on_listbox_double_click)
 
 
 # Create a new thread to handle incoming messages
