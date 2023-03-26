@@ -54,9 +54,12 @@ def send_message(event=None):
 root = tk.Tk()
 root.title("Chat Client")
 
-# Create the chat window
+# Create the chat window and online clients frame
 chat_frame = tk.Frame(root)
 chat_frame.pack(side=tk.TOP, padx=10, pady=10)
+
+online_clients_frame = tk.Frame(chat_frame)
+online_clients_frame.pack(side=tk.RIGHT, padx=10)
 
 scrollbar = tk.Scrollbar(chat_frame)
 scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
@@ -81,6 +84,21 @@ input_field.pack(side=tk.LEFT)
 
 send_button = tk.Button(input_frame, text="Send", command=send_message)
 send_button.pack(side=tk.LEFT)
+
+# Create the list of online clients
+online_clients_label = tk.Label(online_clients_frame, text="Online Clients:")
+online_clients_label.pack(side=tk.TOP)
+
+online_clients_listbox = tk.Listbox(online_clients_frame, height=20, width=20)
+online_clients_listbox.pack(side=tk.BOTTOM, padx=10, pady=10)
+
+
+def update_clients_list(clients):
+    # Clear the existing list of clients
+    clients_listbox.delete(0, tk.END)
+    for client in clients:
+        clients_listbox.insert(tk.END, client)
+
 
 # Create a new thread to handle incoming messages
 receive_thread = threading.Thread(target=receive_messages)
