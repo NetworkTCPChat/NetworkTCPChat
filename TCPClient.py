@@ -101,6 +101,7 @@ chat_window.config(state=tk.DISABLED)
 
 chat_window.configure(background='black')
 
+root.title('Chat Room')
 root.option_add("*Font", "TkFixedFont")
 root.option_add("*sent.Font", "TkFixedFont")
 root.option_add("*received.Font", "TkFixedFont")
