@@ -1,73 +1,136 @@
-import tkinter as tk
+from datetime import datetime
+from tkinter import *
+import textwrap
 
-class ChatWindow(tk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
-        self.pack()
+def send(event):
+    msg = EntryBox.get("1.0", 'end-1c').strip()
+    EntryBox.delete("0.0", END)
 
-        # create a canvas widget for chat messages
-        self.msgs_canvas = tk.Canvas(self, width=400, height=400)
-        self.msgs_canvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+    if msg != '':
+        ChatLog.config(state=NORMAL)
+        ChatLog.insert(END, current_time+' ', ("small", "right", "greycolour"))
+        ChatLog.window_create(END, window=Label(ChatLog, fg="#000000", text=msg, 
+        wraplength=200, font=("Arial", 10), bg="lightblue", bd=4, justify="left"))
+        ChatLog.insert(END,'\n ',"left")
+        ChatLog.config(foreground="#0000CC", font=("Helvetica", 9))
+        ChatLog.yview(END)
 
-        # create a frame widget inside the canvas for messages
-        self.msgs_frame = tk.Frame(self.msgs_canvas)
-        self.msgs_canvas.create_window((0,0), window=self.msgs_frame, anchor='nw')
+        res = "Bot's response goes into here, elongating this message to test textwrap"
+        ChatLog.insert(END, current_time+' ', ("small", "greycolour", "left"))
+        ChatLog.window_create(END, window=Label(ChatLog, fg="#000000", text=res, 
+        wraplength=200, font=("Arial", 10), bg="#DDDDDD", bd=4, justify="left"))
+        ChatLog.insert(END, '\n ', "right")
+        ChatLog.config(state=DISABLED)
+        ChatLog.yview(END)
+        
+def send_by_button():
+    getmsg = EntryBox.get("1.0", 'end-1c').strip()
+    msg = textwrap.fill(getmsg,30)
+    EntryBox.delete("0.0", END)
 
-        # create an input box for typing new messages
-        self.input_box = tk.Entry(self, width=50)
-        self.input_box.pack(side=tk.BOTTOM, fill=tk.X)
+    if msg != '':
+        ChatLog.config(state=NORMAL)
+        ChatLog.insert(END, current_time, ("small","right","colour"))
+        ChatLog.insert(END,msg + '\n\n',("right"))
 
-        # create a button for sending messages
-        self.send_button = tk.Button(self, text="Send", command=self.send_message)
-        self.send_button.pack(side=tk.BOTTOM)
+        ChatLog.config(foreground="#0000CC", font=("Helvetica", 9))
 
-        # set initial values for message ID and bubble color
-        self.msg_id = 0
-        self.bubble_color = '#DCF8C6'  # use a light green color for sent messages
+        res = "Bot's response goes into here, elongating this message to test textwrap"
+        ChatLog.insert(END, current_time, ("small", "colour"))
+        ChatLog.insert(END,textwrap.fill(res,30)+'\n\n')
 
-    def add_message(self, msg, is_sent=False):
-        # create a new label widget for the message
-        lbl = tk.Label(self.msgs_frame, text=msg, wraplength=250)
+        ChatLog.config(state=DISABLED)
+        ChatLog.yview(END)
 
-        # create a rounded rectangle for the message bubble
-        x, y, w, h = 0, 0, 0, 0
-        if is_sent:
-            x = 150
-            w = max(50, lbl.winfo_width() + 20)
-            h = max(20, lbl.winfo_height() + 10)
-            bubble_shape = [(x, y), (x + w, y), (x + w, y + h), (x + 5, y + h), (x, y + h - 5), (x, y)]
-            bubble_color = self.bubble_color
-        else:
-            w = max(50, lbl.winfo_width() + 20)
-            h = max(20, lbl.winfo_height() + 10)
-            bubble_shape = [(x, y), (x + w - 5, y), (x + w, y + 5), (x + w, y + h), (x, y + h), (x, y + 5)]
-            bubble_color = '#Fa63FF'  # use white color for received messages
 
-        # create a canvas widget to draw the message bubble
-        canvas = tk.Canvas(self.msgs_frame, width=w, height=h, highlightthickness=0)
-        canvas.create_polygon(bubble_shape, fill=bubble_color, outline=bubble_color)
+# The following two functions are defined to add a placeholder text or to delete it.
+def deletePlaceholder(event):
+    Placeholder.place_forget()
+    EntryBox.focus_set()
 
-        # add the label widget to the canvas
-        canvas.create_window((x + 10, y + 5), window=lbl, anchor='nw')
 
-        # add the canvas widget to the messages frame
-        self.msgs_frame.update_idletasks()
-        self.msgs_frame.config(height=self.msgs_frame.winfo_height())
-        self.msgs_canvas.config(scrollregion=self.msgs_canvas.bbox(tk.ALL))
+def addPlaceholder(event):
+    if placeholderFlag == 1:
+        Placeholder.place(x=6, y=421, height=70, width=265)
 
-        self.msgs_canvas.yview_moveto(1.0)
 
-        self.msg_id += 1
+base = Tk()
+base.title("Sample Chat")
+base.geometry("400x500")
+base.resizable(width=FALSE, height=FALSE)
 
-    def send_message(self):
-        msg = self.input_box.get()
-        if msg:
-            self.add_message(msg, is_sent=True)
-            self.input_box.delete(0, tk.END)
 
-# create the chat window
-root = tk.Tk()
-root.title("Chat Window")
-ChatWindow(root)
-root.mainloop()
+
+#Add menus to the GUI
+main_menu = Menu(base)
+file_menu = Menu(base)
+file_menu.add_command(label="New..")
+file_menu.add_command(label="Save As..")
+file_menu.add_command(label="Exit")
+main_menu.add_cascade(label="File", menu=file_menu)
+#Add the rest of the menu options to the main menu
+main_menu.add_command(label="Edit")
+main_menu.add_command(label="Quit")
+base.config(menu=main_menu)
+
+now = datetime.now()
+current_time = now.strftime("%D - %H:%M \n")
+
+# Create Chat window
+ChatLog = Text(base, bd=0, height="8", width="50", font="Helvetica", wrap="word")
+ChatLog.config(state=NORMAL)
+ChatLog.tag_config("right", justify="right")
+ChatLog.tag_config("left", justify="left")
+ChatLog.tag_config("small", font=("Helvetica", 7))
+ChatLog.tag_config("colour", foreground="#333333")
+ChatLog.insert(END, current_time, ("small","colour"))
+ChatLog.insert(END,textwrap.fill(f"Hello {'*Name*'}. How can I assist you?",30))
+ChatLog.insert(END,'\n')
+ChatLog.config(foreground="#0000CC", font=("Helvetica", 9))
+ChatLog.config(state=DISABLED)
+
+# Bind scrollbar to Chat window
+scrollbar = Scrollbar(base, command=ChatLog.yview, cursor="double_arrow")
+ChatLog['yscrollcommand'] = scrollbar.set
+
+# Create Button to send message
+SendButton = Button(base, font=("Comic Sans MS", 12, 'bold'), text="Send", width="8", height=5,
+                    bd=0, fg="#750216", activebackground="#AAAAAA", bg="#999999", command=send_by_button)
+
+# Create the box to enter message
+EntryBox = Text(base, bd=0, fg="#000000", bg="#fff5f5", highlightcolor="#750216",
+                width="29", height="5", font=("Arial",10), wrap="word")
+
+#Placeholder config and text:
+Placeholder = Text(base, bd=0, fg="#A0A0A0", bg="#fff5f5", highlightcolor="#750216",
+                   width="29", height="5", font=("Arial",10), wrap="word")
+Placeholder.insert("1.0", "Ask a question (i.e. What are my benefits?)")
+
+# Place all components on the screen
+scrollbar.place(x=376, y=6, height=406)
+ChatLog.place(x=6, y=6, height=410, width=370)
+EntryBox.place(x=6, y=421, height=70, width=276)
+SendButton.place(x=282, y=421, height=70)
+Placeholder.place(x=6, y=421, height=70, width=276)
+
+Placeholder.bind("<FocusIn>", deletePlaceholder)
+EntryBox.bind("<FocusOut>", addPlaceholder)
+
+# Refresh GUI window every 0.1 seconds, mainly for the "SEND" button.
+# If the entry box does not contain text --> 'Send' button is inactive, otherwise it's activated.
+
+def update():
+    global placeholderFlag
+    if (EntryBox.get("1.0", 'end-1c').strip() == ''):
+        SendButton['state'] = DISABLED
+        placeholderFlag = 1
+    elif EntryBox.get("1.0", 'end-1c').strip() != '':
+        SendButton['state'] = ACTIVE
+        placeholderFlag = 0
+    base.after(100, update)
+    
+    
+base.bind('<Return>', send)
+update()
+
+base.mainloop()
