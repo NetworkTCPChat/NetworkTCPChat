@@ -5,7 +5,6 @@ import sys
 import textwrap
 from datetime import datetime
 
-# Define constants for the client
 HOST = 'localhost'
 PORT = 8000
 
@@ -13,68 +12,43 @@ global receive_thread
 global stop_thread
 
 root = tk.Tk()
+root.configure(bg="#2E3440")
 
-# Create a socket object
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# Connect to the server
 client_socket.connect((HOST, PORT))
 
-# Function to handle incoming messages
 def receive_messages():
     while True:
         try:
             if stop_thread == True:
                 sys.exit(0)
                 break
-            # Receive data from the server
             data = client_socket.recv(1024)
             if not data:
                 break
-
-            # # Update the chat window with the received message
-            # chat_window.insert(tk.END, data.decode() + '\n', ('server', 'received'))
-            # # Move the scrollbar to the bottom
-            # chat_window.yview(tk.END)
             add_message(data.decode(),False)
         except:
             client_socket.close()
             break
 
-# Function to send messages to the server
 def send_message(event=None):
-    # Get the message from the input field
     message = input_field.get()
-
-    # Clear the input field
     input_field.delete(0, tk.END)
-
-    # Send the message to the server
     client_socket.send(message.encode())
-
-    # # Insert the message into the chat window
-    # chat_window.insert(tk.END, f"{message}\n", ('user', 'sent'))
-    # # Move the scrollbar to the bottom
-    # chat_window.yview(tk.END)
     add_message(message,True)
 
-# Function to kill threads exit event
 def on_closing():
     client_socket.close()
-    # stop_thread = True
-    # print("Closed Pressed and currently Closing")
     sys.exit(0)
-    # receive_thread.set()
 
-# Create the GUI
-root.title("Chat Client")
-
-# Create the chat window and online clients frame
 chat_frame = tk.Frame(root)
 chat_frame.pack(side=tk.TOP, padx=10, pady=10)
+chat_frame.configure(bg="#2E3440")
 
 online_clients_frame = tk.Frame(chat_frame)
 online_clients_frame.pack(side=tk.RIGHT, padx=10)
+online_clients_frame.configure(bg="#2E3440")
 
 scrollbar = tk.Scrollbar(chat_frame)
 scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
@@ -83,35 +57,29 @@ chat_window = tk.Text(chat_frame, height=20, width=50,
                       yscrollcommand=scrollbar.set, wrap="word")
 chat_window.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-# coming_chat_msgs = tk.Text(chat_frame, height=20, width=50,yscrollcommand=scrollbar.set)
-# coming_chat_msgs.pack(side=tk.RIGHT, padx=10, pady=10)
-
 scrollbar.config(command=chat_window.yview)
 
-# Define the message tags
-chat_window.tag_config('user', foreground='blue')
-chat_window.tag_config('server', foreground='green')
+chat_window.tag_config('user', foreground='#88C0D0')
+chat_window.tag_config('server', foreground='#8FBCBB')
 chat_window.tag_config('small', font=("Helvetica", 7))
-chat_window.tag_config('greycolour', foreground="#333333")
+chat_window.tag_config('greycolour', foreground="#D8DEE9")
 chat_window.tag_config("sent", justify="right")
 chat_window.tag_config("received", justify="left")
 chat_window.tag_config("right", justify="right")
 chat_window.tag_config("small", font=("Helvetica", 7))
-chat_window.tag_config("colour", foreground="#333333")
+chat_window.tag_config("colour", foreground="#D8DEE9")
 
 chat_window.config(state=tk.DISABLED)
+
+chat_window.configure(background='black')
 
 root.option_add("*Font", "TkFixedFont")
 root.option_add("*sent.Font", "TkFixedFont")
 root.option_add("*received.Font", "TkFixedFont")
-#/////////////////////////////////////////////
 
-# chat_window.insert(tk.END,textwrap.fill("Hello {'*Name*'}. How can I assist you?",10))
-#/////////////////////////////////////////////
-
-# Create the input field and send button
 input_frame = tk.Frame(root)
 input_frame.pack(side=tk.BOTTOM, padx=10, pady=10)
+input_frame.configure(bg="#2E3440")
 
 input_field = tk.Entry(input_frame, width=40)
 input_field.bind("<Return>", send_message)
@@ -119,14 +87,16 @@ input_field.pack(side=tk.LEFT)
 
 send_button = tk.Button(input_frame, text="Send", command=send_message)
 send_button.pack(side=tk.LEFT)
+send_button.configure(bg="#D8DEE9", fg="#2E3440")
 
-# Create the list of online clients
 online_clients_label = tk.Label(online_clients_frame, text="Online Clients:")
 online_clients_label.pack(side=tk.TOP)
+online_clients_label.configure(bg="#2E3440", fg="#D8DEE9")
 
 online_clients_listbox = tk.Listbox(online_clients_frame, height=20, width=20)
 online_clients_listbox.pack(side=tk.BOTTOM, padx=10, pady=10)
 
+online_clients_listbox.configure(bg="#4C566A", fg="#D8DEE9", highlightbackground="#81A1C1", highlightcolor="#81A1C1", selectbackground="#81A1C1", selectforeground="#D8DEE9")
 
 # Function to update the list of online clients
 def update_online_clients(online_clients):
@@ -159,16 +129,18 @@ def add_message(msg, is_sent = False):
         chat_window.insert(tk.END,'\n ', "right")
         chat_window.insert(tk.END, get_time_formatted(),('small','greycolour'))
         chat_window.insert(tk.END,'\n ', "right")
-        bg_color = "lightblue"
+        bg_color = "black"
+        fa = "#fc541c"
     else:
         chat_window.insert(tk.END,'\n ', "left")
         chat_window.insert(tk.END, get_time_formatted(),('small','greycolour'))
         chat_window.insert(tk.END,'\n ', "left")
-        bg_color = "#DDDDDD"
+        bg_color = "black"
+        fa = "#13f252"
         
     chat_window.config(state=tk.DISABLED)
     # chat_window.insert(tk.END, get_time_formatted(),('small','greycolour'))
-    chat_window.window_create(tk.END, window=tk.Label(chat_window, fg="#000000", text=msg, 
+    chat_window.window_create(tk.END, window=tk.Label(chat_window, fg=fa, text=msg, 
         wraplength=200, font=("Arial", 10), bg=bg_color, bd=4, justify="left", relief="flat"))
     chat_window.insert(tk.END,'\n',"left")
     chat_window.config(foreground="#0000CC", font=("Helvetica", 9))
