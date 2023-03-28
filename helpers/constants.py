@@ -1,0 +1,2 @@
+CHANGING_COLOR_CODE = '/color '
+TERMINAL_EXEC_CODE = '/? '
