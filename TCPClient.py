@@ -1,20 +1,28 @@
 import socket
 import threading
 import tkinter as tk
+
 import sys
 import textwrap
 from datetime import datetime
 
-HOST = 'localhost'
-PORT = 8000
 
 global receive_thread
 global stop_thread
 
+# Define constants for the client
+HOST = 'localhost'
+PORT = 8000
+
+# Create a socket object
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 root = tk.Tk()
 root.configure(bg="#2E3440")
 
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Function to handle incoming messages
+usernames_set = set()
 
 client_socket.connect((HOST, PORT))
 
@@ -28,6 +36,24 @@ def receive_messages():
             if not data:
                 break
             add_message(data.decode(),False)
+            msg_type = data[0]
+            msg = data[1:]
+            if msg_type == 'o':
+                print('o is recieved')
+                if msg in usernames_set:
+                    usernames_set.remove(msg)
+                else:
+                    usernames_set.add(msg)
+                update_online_clients(usernames_set)
+            elif msg_type == 'O':
+                curr_online_users = msg.split(',')
+                usernames_set.update(curr_online_users)
+                update_online_clients(curr_online_users)
+            else:
+                # Update the chat window with the received message
+                chat_window.insert(tk.END, msg + '\n', 'server')
+                # Move the scrollbar to the bottom
+                chat_window.yview(tk.END)
         except:
             client_socket.close()
             break
@@ -98,28 +124,6 @@ online_clients_listbox.pack(side=tk.BOTTOM, padx=10, pady=10)
 
 online_clients_listbox.configure(bg="#4C566A", fg="#D8DEE9", highlightbackground="#81A1C1", highlightcolor="#81A1C1", selectbackground="#81A1C1", selectforeground="#D8DEE9")
 
-# Function to update the list of online clients
-def update_online_clients(online_clients):
-    # Clear the current list of online clients
-    online_clients_listbox.delete(0, tk.END)
-
-    # Add each online client to the listbox
-    for client in online_clients:
-        online_clients_listbox.insert(tk.END, client)
-
-
-# update_online_clients(['ahmad', 'mohammad'])
-def on_listbox_double_click(event):
-    # Get the selected item from the listbox
-    selection = online_clients_listbox.get(
-        online_clients_listbox.curselection())
-
-    # Perform the desired action, e.g. print the selected item
-    input_field.delete(0, tk.END)
-    input_field.insert(tk.END, f"@{selection} ")
-    input_field.focus_set()
-    # print(selection)
-
 def get_time_formatted():
     return datetime.now().strftime("%a %I-%M %p \n")
 
@@ -170,8 +174,35 @@ def send(msg, is_sent = False):
 # add_message("AdD",True)
 # add_message("AdD", False)
 
+def on_listbox_double_click(event):
+    # Get the selected item from the listbox
+    selection = online_clients_listbox.get(
+        online_clients_listbox.curselection())
+
+    # Perform the desired action, e.g. print the selected item
+    input_field.delete(0, tk.END)
+    input_field.insert(tk.END, f"@{selection} ")
+    input_field.focus_set()
+    # print(selection)
+
+
 online_clients_listbox.bind("<Double-Button-1>", on_listbox_double_click)
 
+
+
+
+
+
+
+
+# Function to update the list of online clients
+def update_online_clients(online_clients):
+    # Clear the current list of online clients
+    online_clients_listbox.delete(0, tk.END)
+
+    # Add each online client to the listbox
+    for client in online_clients:
+        online_clients_listbox.insert(tk.END, client)
 
 # Create a new thread to handle incoming messages
 stop_thread = False
