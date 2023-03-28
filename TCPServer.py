@@ -28,17 +28,20 @@ def handle_client(client_socket, client_address):
     username = client_socket.recv(1024).decode().strip()
     while username in usernames_set:
         client_socket.send(
-            b"\nThis username is already taken, please choose another one: ")
+            b"nThis username is already taken, please choose another one: ")
         username = client_socket.recv(1024).decode().strip()
 
     # Add the client to the dictionary of connected clients
     connected_clients[client_socket] = username
     username_to_socket[username] = client_socket
     usernames_set.add(username)
-
+    for c in connected_clients.keys():
+        if c != client_socket:
+            c.send(
+                f"o{username}".encode())
     # Send a welcome message to the client
-    client_socket.send(f"Welcome to the chat room, {username}!\n".encode())
-
+    client_socket.send(f"nWelcome to the chat room, {username}!\n".encode())
+    client_socket.send(f"O{','.join(usernames_set)}".encode())
     for c in connected_clients.keys():
         if c != client_socket:
             c.send(
@@ -59,18 +62,25 @@ def handle_client(client_socket, client_address):
                 if curr_username in usernames_set:
                     message = ' '.join(splitted[1:])
                     username_to_socket[curr_username].send(
-                        f"{connected_clients[client_socket]}: {message}".encode())
+                        f"d{connected_clients[client_socket]}: {message}".encode())
             else:
                 # Broadcast the message to all connected clients
                 for c in connected_clients.keys():
                     if c != client_socket:
                         c.send(
-                            f">>>>>{connected_clients[client_socket]}: {data}".encode())
+                            f"n{connected_clients[client_socket]}: {data}".encode())
         except Exception as e:
             print(e)
             # Remove the client from the dictionary of connected clients
+
             del connected_clients[client_socket]
+            del username_to_socket[username]
+            usernames_set.remove(username)
+
             client_socket.close()
+            for c in connected_clients.keys():
+                c.send(
+                    f"o{username}".encode())
             break
 
 

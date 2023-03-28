@@ -13,20 +13,34 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket.connect((HOST, PORT))
 
 # Function to handle incoming messages
+usernames_set = set()
 
 
 def receive_messages():
     while True:
         try:
             # Receive data from the server
-            data = client_socket.recv(1024)
+            data = client_socket.recv(1024).decode()
             if not data:
                 break
-
-            # Update the chat window with the received message
-            chat_window.insert(tk.END, data.decode() + '\n', 'server')
-            # Move the scrollbar to the bottom
-            chat_window.yview(tk.END)
+            msg_type = data[0]
+            msg = data[1:]
+            if msg_type == 'o':
+                print('o is recieved')
+                if msg in usernames_set:
+                    usernames_set.remove(msg)
+                else:
+                    usernames_set.add(msg)
+                update_online_clients(usernames_set)
+            elif msg_type == 'O':
+                curr_online_users = msg.split(',')
+                usernames_set.update(curr_online_users)
+                update_online_clients(curr_online_users)
+            else:
+                # Update the chat window with the received message
+                chat_window.insert(tk.END, msg + '\n', 'server')
+                # Move the scrollbar to the bottom
+                chat_window.yview(tk.END)
         except:
             client_socket.close()
             break
