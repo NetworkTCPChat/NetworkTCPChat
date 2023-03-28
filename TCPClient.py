@@ -17,14 +17,15 @@ PORT = 8000
 # Create a socket object
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-root = tk.Tk()
-root.configure(bg="#2E3440")
-
 
 # Function to handle incoming messages
 usernames_set = set()
 
 client_socket.connect((HOST, PORT))
+
+root = tk.Tk()
+root.configure(bg="#2E3440")
+
 
 def receive_messages():
     while True:
@@ -32,17 +33,18 @@ def receive_messages():
             if stop_thread == True:
                 sys.exit(0)
                 break
-            data = client_socket.recv(1024)
+            data = client_socket.recv(1024).decode()
             if not data:
                 break
-            add_message(data.decode(),False)
             msg_type = data[0]
             msg = data[1:]
             if msg_type == 'o':
-                print('o is recieved')
+                print(data)
                 if msg in usernames_set:
+                    add_message(f"{msg} has just left the room", False)
                     usernames_set.remove(msg)
                 else:
+                    add_message(f"{msg} has just joined the room", False)
                     usernames_set.add(msg)
                 update_online_clients(usernames_set)
             elif msg_type == 'O':
@@ -50,23 +52,23 @@ def receive_messages():
                 usernames_set.update(curr_online_users)
                 update_online_clients(curr_online_users)
             else:
-                # Update the chat window with the received message
-                chat_window.insert(tk.END, msg + '\n', 'server')
-                # Move the scrollbar to the bottom
-                chat_window.yview(tk.END)
+                add_message(msg, False)
         except:
             client_socket.close()
             break
+
 
 def send_message(event=None):
     message = input_field.get()
     input_field.delete(0, tk.END)
     client_socket.send(message.encode())
-    add_message(message,True)
+    add_message(message, True)
+
 
 def on_closing():
     client_socket.close()
     sys.exit(0)
+
 
 chat_frame = tk.Frame(root)
 chat_frame.pack(side=tk.TOP, padx=10, pady=10)
@@ -122,57 +124,63 @@ online_clients_label.configure(bg="#2E3440", fg="#D8DEE9")
 online_clients_listbox = tk.Listbox(online_clients_frame, height=20, width=20)
 online_clients_listbox.pack(side=tk.BOTTOM, padx=10, pady=10)
 
-online_clients_listbox.configure(bg="#4C566A", fg="#D8DEE9", highlightbackground="#81A1C1", highlightcolor="#81A1C1", selectbackground="#81A1C1", selectforeground="#D8DEE9")
+online_clients_listbox.configure(bg="#4C566A", fg="#D8DEE9", highlightbackground="#81A1C1",
+                                 highlightcolor="#81A1C1", selectbackground="#81A1C1", selectforeground="#D8DEE9")
+
 
 def get_time_formatted():
     return datetime.now().strftime("%a %I-%M %p \n")
 
-def add_message(msg, is_sent = False):
+
+def add_message(msg, is_sent=False):
     chat_window.config(state=tk.NORMAL)
     if is_sent:
-        chat_window.insert(tk.END,'\n ', "right")
-        chat_window.insert(tk.END, get_time_formatted(),('small','greycolour'))
-        chat_window.insert(tk.END,'\n ', "right")
+        chat_window.insert(tk.END, '\n ', "right")
+        chat_window.insert(tk.END, get_time_formatted(),
+                           ('small', 'greycolour'))
+        chat_window.insert(tk.END, '\n ', "right")
         bg_color = "black"
         fa = "#fc541c"
     else:
-        chat_window.insert(tk.END,'\n ', "left")
-        chat_window.insert(tk.END, get_time_formatted(),('small','greycolour'))
-        chat_window.insert(tk.END,'\n ', "left")
+        chat_window.insert(tk.END, '\n ', "left")
+        chat_window.insert(tk.END, get_time_formatted(),
+                           ('small', 'greycolour'))
+        chat_window.insert(tk.END, '\n ', "left")
         bg_color = "black"
         fa = "#13f252"
-        
+
     chat_window.config(state=tk.DISABLED)
     # chat_window.insert(tk.END, get_time_formatted(),('small','greycolour'))
-    chat_window.window_create(tk.END, window=tk.Label(chat_window, fg=fa, text=msg, 
-        wraplength=200, font=("Arial", 10), bg=bg_color, bd=4, justify="left", relief="flat"))
-    chat_window.insert(tk.END,'\n',"left")
+    chat_window.window_create(tk.END, window=tk.Label(chat_window, fg=fa, text=msg,
+                                                      wraplength=200, font=("Arial", 10), bg=bg_color, bd=4, justify="left", relief="flat"))
+    chat_window.insert(tk.END, '\n', "left")
     chat_window.config(foreground="#0000CC", font=("Helvetica", 9))
     chat_window.yview(tk.END)
 
 
-def send(msg, is_sent = False):
+def send(msg, is_sent=False):
     chat_window.config(state=tk.NORMAL)
     # chat_window.insert(tk.END, get_time_formatted()+' ', ("small", "left", "greycolour"))
-    chat_window.insert(tk.END,'\n ', "right")
-    chat_window.window_create(tk.END, window=tk.Label(chat_window, fg="#000000", text=msg, 
-    wraplength=200, font=("Arial", 10), bg="lightblue", bd=4, justify="left"))
-    chat_window.insert(tk.END,'\n ', "left")
+    chat_window.insert(tk.END, '\n ', "right")
+    chat_window.window_create(tk.END, window=tk.Label(chat_window, fg="#000000", text=msg,
+                                                      wraplength=200, font=("Arial", 10), bg="lightblue", bd=4, justify="left"))
+    chat_window.insert(tk.END, '\n ', "left")
     chat_window.config(foreground="#0000CC", font=("Helvetica", 9))
     chat_window.yview(tk.END)
 
     # res = "Bot's response goes into here, elongating this message to test textwrap"
     # chat_window.insert(tk.END, get_time_formatted()+' ', ("small", "greycolour", "left"))
-    # chat_window.window_create(tk.END, window=tk.Label(chat_window, fg="#000000", text=res, 
+    # chat_window.window_create(tk.END, window=tk.Label(chat_window, fg="#000000", text=res,
     # wraplength=200, font=("Arial", 10), bg="#DDDDDD", bd=4, justify="left"))
     # chat_window.insert(tk.END, '\n ', "right")
     # chat_window.config(state=tk.DISABLED)
     # chat_window.yview(tk.END)
-        
+
 # send("Hello, World!")
 # send("Hello, World!")
 # add_message("AdD",True)
 # add_message("AdD", False)
+
 
 def on_listbox_double_click(event):
     # Get the selected item from the listbox
@@ -189,12 +197,6 @@ def on_listbox_double_click(event):
 online_clients_listbox.bind("<Double-Button-1>", on_listbox_double_click)
 
 
-
-
-
-
-
-
 # Function to update the list of online clients
 def update_online_clients(online_clients):
     # Clear the current list of online clients
@@ -203,6 +205,7 @@ def update_online_clients(online_clients):
     # Add each online client to the listbox
     for client in online_clients:
         online_clients_listbox.insert(tk.END, client)
+
 
 # Create a new thread to handle incoming messages
 stop_thread = False

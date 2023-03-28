@@ -24,28 +24,24 @@ server_socket.listen(MAX_CLIENTS)
 # Function to handle incoming client connections
 def handle_client(client_socket, client_address):
     # Prompt the client for their username
-    client_socket.send(b"\nPlease enter your username: ")
-    username = client_socket.recv(1024).decode().strip()
+    client_socket.send("nPlease enter your username: ".encode())
+    username = client_socket.recv(1024).decode()
     while username in usernames_set:
         client_socket.send(
-            b"nThis username is already taken, please choose another one: ")
-        username = client_socket.recv(1024).decode().strip()
+            "nThis username is already taken, please choose another one: ".encode())
+        username = client_socket.recv(1024).decode()
 
     # Add the client to the dictionary of connected clients
     connected_clients[client_socket] = username
     username_to_socket[username] = client_socket
     usernames_set.add(username)
-    for c in connected_clients.keys():
-        if c != client_socket:
-            c.send(
-                f"o{username}".encode())
+
     # Send a welcome message to the client
-    client_socket.send(f"nWelcome to the chat room, {username}!\n".encode())
+    client_socket.send(f"wWelcome to the chat room, {username}!\n".encode())
     client_socket.send(f"O{','.join(usernames_set)}".encode())
     for c in connected_clients.keys():
         if c != client_socket:
-            c.send(
-                f"{connected_clients[client_socket]} has just joined the room".encode())
+            c.send(f"o{username}".encode())
 
     while True:
         try:
