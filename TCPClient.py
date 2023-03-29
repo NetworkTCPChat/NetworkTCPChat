@@ -25,8 +25,7 @@ client_socket.connect((HOST, PORT))
 
 root = tk.Tk()
 root.configure(bg="#2E3440")
-
-
+root.title('Chat')
 def receive_messages():
     while True:
         try:
@@ -49,6 +48,8 @@ def receive_messages():
                 update_online_clients(usernames_set)
             elif msg_type == 'O':
                 curr_online_users = msg.split(',')
+                curr_online_users.sort()
+                root.title(f'Chat - {curr_online_users.__getitem__(curr_online_users.__len__()-1)}') 
                 usernames_set.update(curr_online_users)
                 update_online_clients(curr_online_users)
             else:
@@ -101,7 +102,6 @@ chat_window.config(state=tk.DISABLED)
 
 chat_window.configure(background='black')
 
-root.title('Chat Room')
 root.option_add("*Font", "TkFixedFont")
 root.option_add("*sent.Font", "TkFixedFont")
 root.option_add("*received.Font", "TkFixedFont")
