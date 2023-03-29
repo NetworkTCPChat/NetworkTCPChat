@@ -41,7 +41,7 @@ Lunch clients
 
 ## Screenshots
 
-![App Screenshot]([https://i.ibb.co/6gHJC6G/1.png](https://prnt.sc/KD44RIO90ED1))
+![alt text]([http://url/to/img.png](https://prnt.sc/xhDggu4boPqa))
 
 
 
