@@ -53,8 +53,9 @@ def receive_messages():
                 curr_online_users = msg.split(',')
                 curr_online_users.sort()
                 usernames_set.update(curr_online_users)
-                update_online_clients(curr_online_users)
+                update_online_clients(curr_online_users)               
                 root.title(f'Chat - {curr_online_users.__getitem__(curr_online_users.__len__()-1)}') 
+
             elif msg_type in ['z', 'w']:
                 add_message(msg, 'system')
             else:
@@ -69,6 +70,13 @@ def send_message(event=None):
     input_field.delete(0, tk.END)
     client_socket.send(message.encode())
     add_message(message, 'me')
+
+def clear_chat():
+     chat_window.config(state=tk.NORMAL)
+     chat_window.delete('1.0', tk.END)
+     chat_window.config(state=tk.DISABLED)
+
+
 
 
 def on_closing():
@@ -121,6 +129,10 @@ input_field.bind("<Return>", send_message)
 input_field.pack(side=tk.LEFT)
 
 send_button = tk.Button(input_frame, text="Send", command=send_message)
+send_button.pack(side=tk.LEFT)
+send_button.configure(bg="#D8DEE9", fg="#2E3440")
+
+send_button = tk.Button(input_frame, text="Clear Chat", command=clear_chat)
 send_button.pack(side=tk.LEFT)
 send_button.configure(bg="#D8DEE9", fg="#2E3440")
 
@@ -187,7 +199,6 @@ def add_message(msg, sender):
 
 
     
-
 
 def send(msg, is_sent=False):
     chat_window.config(state=tk.NORMAL)
