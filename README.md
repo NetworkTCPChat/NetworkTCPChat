@@ -41,7 +41,7 @@ Lunch clients
 
 ## Screenshots
 
-![1](https://user-images.githubusercontent.com/114855752/228548930-fdba5d0c-9893-45a4-a391-13a7096dc3d2.PNG)
+![1](https://user-images.githubusercontent.com/114855752/228550714-0ba921a9-3ce1-4fdb-a3fe-8963e622476d.PNG)
 
 
 
