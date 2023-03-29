@@ -52,9 +52,9 @@ def receive_messages():
             elif msg_type == 'O':
                 curr_online_users = msg.split(',')
                 curr_online_users.sort()
-                root.title(f'Chat - {curr_online_users.__getitem__(curr_online_users.__len__()-1)}') 
                 usernames_set.update(curr_online_users)
                 update_online_clients(curr_online_users)
+                root.title(f'Chat - {curr_online_users.__getitem__(curr_online_users.__len__()-1)}') 
             elif msg_type in ['z', 'w']:
                 add_message(msg, 'system')
             else:
