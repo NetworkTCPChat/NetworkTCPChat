@@ -24,11 +24,11 @@ server_socket.listen(MAX_CLIENTS)
 # Function to handle incoming client connections
 def handle_client(client_socket, client_address):
     # Prompt the client for their username
-    client_socket.send("nPlease enter your username: ".encode())
+    client_socket.send("zPlease enter your username: ".encode())
     username = client_socket.recv(1024).decode()
     while username in usernames_set:
         client_socket.send(
-            "nThis username is already taken, please choose another one: ".encode())
+            "zThis username is already taken, please choose another one: ".encode())
         username = client_socket.recv(1024).decode()
 
     # Add the client to the dictionary of connected clients

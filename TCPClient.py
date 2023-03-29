@@ -33,26 +33,31 @@ def receive_messages():
             if stop_thread == True:
                 sys.exit(0)
                 break
+
             data = client_socket.recv(1024).decode()
+            
             if not data:
                 break
+
             msg_type = data[0]
             msg = data[1:]
+
             if msg_type == 'o':
-                print(data)
                 if msg in usernames_set:
-                    add_message(f"{msg} has just left the room", False)
+                    add_message(f"{msg} has just left the room", 'system')
                     usernames_set.remove(msg)
                 else:
-                    add_message(f"{msg} has just joined the room", False)
+                    add_message(f"{msg} has just joined the room", 'system')
                     usernames_set.add(msg)
                 update_online_clients(usernames_set)
             elif msg_type == 'O':
                 curr_online_users = msg.split(',')
                 usernames_set.update(curr_online_users)
                 update_online_clients(curr_online_users)
+            elif msg_type in ['z', 'w']:
+                add_message(msg, 'system')
             else:
-                add_message(msg, False)
+                add_message(msg, 'others')
         except:
             client_socket.close()
             break
@@ -62,7 +67,7 @@ def send_message(event=None):
     message = input_field.get()
     input_field.delete(0, tk.END)
     client_socket.send(message.encode())
-    add_message(message, True)
+    add_message(message, 'me')
 
 
 def on_closing():
@@ -91,8 +96,9 @@ chat_window.tag_config('user', foreground='#88C0D0')
 chat_window.tag_config('server', foreground='#8FBCBB')
 chat_window.tag_config('small', font=("Helvetica", 7))
 chat_window.tag_config('greycolour', foreground="#D8DEE9")
-chat_window.tag_config("sent", justify="right")
-chat_window.tag_config("received", justify="left")
+chat_window.tag_config("me", justify="right")
+chat_window.tag_config("others", justify="left")
+chat_window.tag_config("system", justify="center")
 chat_window.tag_config("right", justify="right")
 chat_window.tag_config("small", font=("Helvetica", 7))
 chat_window.tag_config("colour", foreground="#D8DEE9")
@@ -133,30 +139,52 @@ def get_time_formatted():
     return datetime.now().strftime("%a %I-%M %p \n")
 
 
-def add_message(msg, is_sent=False):
+def add_message(msg, sender):
+    
     chat_window.config(state=tk.NORMAL)
-    if is_sent:
-        chat_window.insert(tk.END, '\n ', "right")
-        chat_window.insert(tk.END, get_time_formatted(),
-                           ('small', 'greycolour'))
-        chat_window.insert(tk.END, '\n ', "right")
-        bg_color = "black"
-        fa = "#fc541c"
-    else:
-        chat_window.insert(tk.END, '\n ', "left")
-        chat_window.insert(tk.END, get_time_formatted(),
-                           ('small', 'greycolour'))
-        chat_window.insert(tk.END, '\n ', "left")
-        bg_color = "black"
-        fa = "#13f252"
+
+    fa = "#13f252"
+    bg_color = "black"
+    text_position = ""
+    tags = ""
+
+    match sender:
+        case 'others':
+            text_position = "left"
+            fa = "#13f252"
+            tags = 'others'
+        case 'system':
+            text_position = "center"
+            fa = "#ffffff"
+            tags = 'system'
+        case 'me':
+            text_position = "right"
+            fa = "#fc541c"
+            tags = 'me'
+            
+    
+    chat_window.insert(tk.END, '\n ', text_position)
+    chat_window.insert(tk.END, get_time_formatted(),('small', 'greycolour', text_position))
+    chat_window.insert(tk.END, ' ', text_position)
 
     chat_window.config(state=tk.DISABLED)
-    # chat_window.insert(tk.END, get_time_formatted(),('small','greycolour'))
-    chat_window.window_create(tk.END, window=tk.Label(chat_window, fg=fa, text=msg,
-                                                      wraplength=200, font=("Arial", 10), bg=bg_color, bd=4, justify="left", relief="flat"))
-    chat_window.insert(tk.END, '\n', "left")
+
+    message = tk.Label(chat_window, fg=fa, text=msg, wraplength=200, font=("Arial", 10), bg=bg_color, bd=4, justify=tk.CENTER, relief="flat", anchor="center")
+
+    # chat_window.insert(tk.END, '\n ', 'center')
+    # chat_window.window_create(tk.END, window=message)
+    # chat_window.config(foreground="#0000CC", font=("Helvetica", 9))
+    # chat_window.yview(tk.END)
+
+    chat_window.window_create(tk.END, window=message)
+    chat_window.insert(tk.END, '\n', "center")
+    chat_window.tag_add(tags, "end-2l", "end-1c")
     chat_window.config(foreground="#0000CC", font=("Helvetica", 9))
     chat_window.yview(tk.END)
+
+
+
+    
 
 
 def send(msg, is_sent=False):
@@ -169,6 +197,8 @@ def send(msg, is_sent=False):
     chat_window.config(foreground="#0000CC", font=("Helvetica", 9))
     chat_window.yview(tk.END)
 
+    
+
     # res = "Bot's response goes into here, elongating this message to test textwrap"
     # chat_window.insert(tk.END, get_time_formatted()+' ', ("small", "greycolour", "left"))
     # chat_window.window_create(tk.END, window=tk.Label(chat_window, fg="#000000", text=res,
@@ -179,8 +209,9 @@ def send(msg, is_sent=False):
 
 # send("Hello, World!")
 # send("Hello, World!")
-# add_message("AdD",True)
-# add_message("AdD", False)
+add_message("by me",'me')
+add_message("by others", 'others')
+add_message("by system", 'system')
 
 
 def on_listbox_double_click(event):
