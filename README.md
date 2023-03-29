@@ -41,9 +41,8 @@ Lunch clients
 
 ## Screenshots
 
-![App Screenshot](https://i.ibb.co/6gHJC6G/1.png)
+![App Screenshot]([https://i.ibb.co/6gHJC6G/1.png](https://prnt.sc/KD44RIO90ED1))
 
-![App Screenshot](https://i.ibb.co/ZSfXrbS/2.png)
 
 
 ## Authors
