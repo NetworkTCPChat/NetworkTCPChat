@@ -41,7 +41,7 @@ Lunch clients
 
 ## Screenshots
 
-![alt text]([http://url/to/img.png](https://prnt.sc/xhDggu4boPqa))
+![1](https://user-images.githubusercontent.com/114855752/228548930-fdba5d0c-9893-45a4-a391-13a7096dc3d2.PNG)
 
 
 
