@@ -147,6 +147,7 @@ def add_message(msg, sender):
     bg_color = "black"
     text_position = ""
     tags = ""
+    text_direction = tk.LEFT
 
     match sender:
         case 'others':
@@ -157,6 +158,7 @@ def add_message(msg, sender):
             text_position = "center"
             fa = "#ffffff"
             tags = 'system'
+            text_direction = tk.CENTER
         case 'me':
             text_position = "right"
             fa = "#fc541c"
@@ -168,8 +170,8 @@ def add_message(msg, sender):
     chat_window.insert(tk.END, ' ', text_position)
 
     chat_window.config(state=tk.DISABLED)
-
-    message = tk.Label(chat_window, fg=fa, text=msg, wraplength=200, font=("Arial", 10), bg=bg_color, bd=4, justify=tk.CENTER, relief="flat", anchor="center")
+    
+    message = tk.Label(chat_window, fg=fa, text=msg, wraplength=200, font=("Arial", 10), bg=bg_color, bd=4, justify=text_direction, relief="flat", anchor="center")
 
     # chat_window.insert(tk.END, '\n ', 'center')
     # chat_window.window_create(tk.END, window=message)
@@ -209,9 +211,6 @@ def send(msg, is_sent=False):
 
 # send("Hello, World!")
 # send("Hello, World!")
-add_message("by me",'me')
-add_message("by others", 'others')
-add_message("by system", 'system')
 
 
 def on_listbox_double_click(event):

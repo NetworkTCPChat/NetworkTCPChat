@@ -58,7 +58,7 @@ def handle_client(client_socket, client_address):
                 if curr_username in usernames_set:
                     message = ' '.join(splitted[1:])
                     username_to_socket[curr_username].send(
-                        f"d{connected_clients[client_socket]}: {message}".encode())
+                        f"d{connected_clients[client_socket]} (private): {message}".encode())
             else:
                 # Broadcast the message to all connected clients
                 for c in connected_clients.keys():
