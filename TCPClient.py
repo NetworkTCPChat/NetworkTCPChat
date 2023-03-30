@@ -20,7 +20,6 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Function to handle incoming messages
 usernames_set = set()
-
 client_socket.connect((HOST, PORT))
 
 root = tk.Tk()
@@ -51,10 +50,8 @@ def receive_messages():
                 update_online_clients(usernames_set)
             elif msg_type == 'O':
                 curr_online_users = msg.split(',')
-                curr_online_users.sort()
                 usernames_set.update(curr_online_users)
                 update_online_clients(curr_online_users)               
-                root.title(f'Chat - {curr_online_users.__getitem__(curr_online_users.__len__()-1)}') 
 
             elif msg_type in ['z', 'w']:
                 add_message(msg, 'system')
@@ -64,9 +61,10 @@ def receive_messages():
             client_socket.close()
             break
 
-
 def send_message(event=None):
     message = input_field.get()
+    if len(usernames_set) == 0:
+        root.title(f'Chat - {message}') 
     input_field.delete(0, tk.END)
     client_socket.send(message.encode())
     add_message(message, 'me')
