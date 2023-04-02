@@ -8,8 +8,11 @@ Simple Python TCP Multithreading chat application.
 
 - Mutlithreading chat app
 - Each client have a name to chat in
-- Client can choose text color for his own messages
-- Client can change his texting color
+- Can mention a client by his username
+- Client is able to see current online users
+- Added time when the message is delivered 
+- Client can choose text color for his own messages (console version)
+- Client can change his texting color (console version)
 - Cross platform
 
 
@@ -18,13 +21,13 @@ Simple Python TCP Multithreading chat application.
 Clone the project
 
 ```bash
-  git clone https://github.com/IbrahimTEslim/Networks_SimpleChat.git
+  https://github.com/NetworkTCPChat/NetworkTCPChat.git
 ```
 
 Go to the project directory
 
 ```bash
-  cd Networks_SimpleChat
+  cd NetworkTCPChat
 ```
 
 Start the server
