@@ -130,9 +130,9 @@ send_button = tk.Button(input_frame, text="Send", command=send_message)
 send_button.pack(side=tk.LEFT)
 send_button.configure(bg="#D8DEE9", fg="#2E3440")
 
-send_button = tk.Button(input_frame, text="Clear Chat", command=clear_chat)
-send_button.pack(side=tk.LEFT)
-send_button.configure(bg="#D8DEE9", fg="#2E3440")
+clear_chat_button = tk.Button(input_frame, text="Clear Chat", command=clear_chat)
+clear_chat_button.pack(side=tk.LEFT)
+clear_chat_button.configure(bg="#D8DEE9", fg="#2E3440")
 
 online_clients_label = tk.Label(online_clients_frame, text="Online Clients:")
 online_clients_label.pack(side=tk.TOP)
@@ -208,18 +208,6 @@ def send(msg, is_sent=False):
     chat_window.config(foreground="#0000CC", font=("Helvetica", 9))
     chat_window.yview(tk.END)
 
-    
-
-    # res = "Bot's response goes into here, elongating this message to test textwrap"
-    # chat_window.insert(tk.END, get_time_formatted()+' ', ("small", "greycolour", "left"))
-    # chat_window.window_create(tk.END, window=tk.Label(chat_window, fg="#000000", text=res,
-    # wraplength=200, font=("Arial", 10), bg="#DDDDDD", bd=4, justify="left"))
-    # chat_window.insert(tk.END, '\n ', "right")
-    # chat_window.config(state=tk.DISABLED)
-    # chat_window.yview(tk.END)
-
-# send("Hello, World!")
-# send("Hello, World!")
 
 
 def on_listbox_double_click(event):
